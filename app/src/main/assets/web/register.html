@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Register Centre - AutoPollution Manager Pro</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0e6f42">
+</head>
+<body>
+
+  <!-- Top Header -->
+  <header class="header-bar">
+    <div class="brand-wrapper" onclick="window.location.href='index.html'">
+      <div class="brand-logo-badge">🚗</div>
+      <div>
+        <div class="brand-title">AutoPollution Pro</div>
+        <div class="brand-sub">New Centre Registration</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <a href="login.html" class="btn btn-secondary btn-sm" style="color:#ffffff; background:rgba(255,255,255,0.2);">Back to Login</a>
+    </div>
+  </header>
+
+  <main class="container" style="max-width:680px; margin-top:20px;">
+    
+    <div style="margin-bottom:20px; text-align:center;">
+      <h1 style="font-size:1.6rem; font-weight:800; color:var(--primary-dark);">Register Your Pollution Testing Centre</h1>
+      <p style="font-size:0.88rem; color:var(--text-muted); margin-top:4px;">
+        Join India's leading PUC network. Instant 14-day trial upon Super Admin verification.
+      </p>
+    </div>
+
+    <div class="alert-banner info" style="font-size:0.85rem;">
+      <div>
+        <strong>📌 Commercial Verification Policy:</strong>
+        To prevent unverified or duplicate testing centres, all new registrations are submitted in <strong>Pending Approval</strong> status. The Super Admin reviews and assigns your official Centre ID within 1 hour.
+      </div>
+    </div>
+
+    <!-- Registration Form -->
+    <div class="form-card">
+      <form id="centreRegisterForm" onsubmit="handleRegisterSubmit(event)">
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Pollution Testing Centre Name *</label>
+            <input type="text" id="regCentreName" class="form-control" placeholder="e.g. Maa Tara Auto Emission Testing Centre" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Owner / Licensee Name *</label>
+            <input type="text" id="regOwnerName" class="form-control" placeholder="e.g. Sahid Khan" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Official Mobile Number * (10 Digits)</label>
+            <input type="tel" id="regPhone" class="form-control" placeholder="e.g. 9876543210" maxlength="10" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">WhatsApp Business Number</label>
+            <input type="tel" id="regWhatsApp" class="form-control" placeholder="e.g. 9876543210" maxlength="10">
+            <label class="form-check" style="margin-top:6px;">
+              <input type="checkbox" id="chkSameWhatsApp" onchange="syncWhatsAppNumber()">
+              <span style="font-size:0.75rem;">Same as Mobile Number</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Official Email Address *</label>
+          <input type="email" id="regEmail" class="form-control" placeholder="e.g. centre@gmail.com" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Complete Physical Address of Centre *</label>
+          <textarea id="regAddress" class="form-control" rows="2" placeholder="e.g. NH-6 Bombay Road, Near Toll Plaza, Howrah" required></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">State *</label>
+            <select id="regState" class="form-control" required onchange="updateDistrictOptions()">
+              <option value="West Bengal">West Bengal</option>
+              <option value="Delhi">Delhi</option>
+              <option value="Maharashtra">Maharashtra</option>
+              <option value="Karnataka">Karnataka</option>
+              <option value="Uttar Pradesh">Uttar Pradesh</option>
+              <option value="Bihar">Bihar</option>
+              <option value="Gujarat">Gujarat</option>
+              <option value="Tamil Nadu">Tamil Nadu</option>
+              <option value="Rajasthan">Rajasthan</option>
+              <option value="Punjab">Punjab</option>
+              <option value="Haryana">Haryana</option>
+              <option value="Madhya Pradesh">Madhya Pradesh</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">District *</label>
+            <input type="text" id="regDistrict" class="form-control" placeholder="e.g. Howrah or South Delhi" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Landmark / Location</label>
+            <input type="text" id="regLocation" class="form-control" placeholder="e.g. Opposite HP Petrol Pump">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Google Maps Link (Optional)</label>
+            <input type="url" id="regMapLink" class="form-control" placeholder="https://maps.google.com/?q=...">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Create Password *</label>
+            <input type="password" id="regPassword" class="form-control" placeholder="Min. 6 characters" minlength="6" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Confirm Password *</label>
+            <input type="password" id="regConfirmPassword" class="form-control" placeholder="Re-enter password" minlength="6" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-check">
+            <input type="checkbox" id="regTerms" required checked>
+            <span style="font-size:0.82rem;">I agree to the <a href="terms.html" target="_blank" style="color:var(--primary); font-weight:600;">Terms & Conditions</a> and consent to TRAI/DLT automated customer messaging rules.</span>
+          </label>
+        </div>
+
+        <button type="submit" id="btnRegister" class="btn btn-primary" style="width:100%; padding:14px; font-size:1rem; font-weight:700;">
+          Submit Application for Verification
+        </button>
+
+      </form>
+    </div>
+
+    <!-- Registration Result Modal -->
+    <div id="regSuccessModal" class="modal-overlay">
+      <div class="modal-box" style="text-align:center; padding:24px;">
+        <div style="font-size:52px; margin-bottom:12px;">⏳</div>
+        <h2 style="font-size:1.35rem; font-weight:800; color:var(--primary-dark);">Application Received!</h2>
+        <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; padding:12px; margin:14px 0; text-align:left; font-size:0.85rem;">
+          <div><strong>Centre Name:</strong> <span id="resCentreName"></span></div>
+          <div><strong>Generated ID:</strong> <span id="resCentreId" style="font-weight:700; color:var(--primary-dark);"></span></div>
+          <div><strong>Status:</strong> <span class="badge badge-yellow">Pending Super Admin Approval</span></div>
+        </div>
+        <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.4; margin-bottom:18px;">
+          Your account has been submitted to the Super Admin queue. Normal software access will be activated immediately once approved. You can also approve it right now in the demo Super Admin Portal.
+        </p>
+        <div style="display:flex; gap:10px; justify-content:center;">
+          <a href="admin.html" class="btn btn-primary btn-sm">🛡️ Open Super Admin Portal (Approve Now)</a>
+          <a href="login.html" class="btn btn-secondary btn-sm">Go to Login</a>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="js/db.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    formatMobileNumber(document.getElementById('regPhone'));
+    formatMobileNumber(document.getElementById('regWhatsApp'));
+
+    function syncWhatsAppNumber() {
+      const chk = document.getElementById('chkSameWhatsApp');
+      const phone = document.getElementById('regPhone').value;
+      const waInput = document.getElementById('regWhatsApp');
+      if (chk.checked) {
+        waInput.value = phone;
+      }
+    }
+
+    function handleRegisterSubmit(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btnRegister');
+      btn.disabled = true;
+      btn.textContent = 'Submitting application...';
+
+      const data = {
+        name: document.getElementById('regCentreName').value,
+        ownerName: document.getElementById('regOwnerName').value,
+        phone: document.getElementById('regPhone').value,
+        whatsapp: document.getElementById('regWhatsApp').value,
+        email: document.getElementById('regEmail').value,
+        address: document.getElementById('regAddress').value,
+        state: document.getElementById('regState').value,
+        district: document.getElementById('regDistrict').value,
+        location: document.getElementById('regLocation').value,
+        mapLink: document.getElementById('regMapLink').value,
+        password: document.getElementById('regPassword').value,
+        confirmPassword: document.getElementById('regConfirmPassword').value
+      };
+
+      setTimeout(() => {
+        try {
+          const registered = AppAuth.registerCentre(data);
+          document.getElementById('resCentreName').textContent = registered.name;
+          document.getElementById('resCentreId').textContent = registered.centreId;
+          document.getElementById('regSuccessModal').classList.add('open');
+        } catch (err) {
+          btn.disabled = false;
+          btn.textContent = 'Submit Application for Verification';
+          showToast(err.message, 'error');
+        }
+      }, 500);
+    }
+  </script>
+</body>
+</html>

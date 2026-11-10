@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Reminders & Scheduled Jobs - AutoPollution Manager Pro</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0e6f42">
+</head>
+<body>
+
+  <!-- Top Header Navigation -->
+  <header class="header-bar">
+    <div class="brand-wrapper" onclick="window.location.href='dashboard.html'">
+      <div class="brand-logo-badge">🚗</div>
+      <div>
+        <div class="brand-title">Reminders Engine</div>
+        <div class="brand-sub">AutoPollution Pro</div>
+      </div>
+    </div>
+    
+    <div class="header-nav-links">
+      <a href="dashboard.html" style="color:rgba(255,255,255,0.85); text-decoration:none; font-size:0.88rem;">Dashboard</a>
+      <a href="vehicles.html" style="color:rgba(255,255,255,0.85); text-decoration:none; font-size:0.88rem;">Vehicles</a>
+      <a href="reminders.html" style="color:white; font-weight:700; text-decoration:none; font-size:0.88rem;">Reminders</a>
+      <a href="subscription.html" style="color:rgba(255,255,255,0.85); text-decoration:none; font-size:0.88rem;">Subscription</a>
+      <a href="settings.html" style="color:rgba(255,255,255,0.85); text-decoration:none; font-size:0.88rem;">Settings</a>
+    </div>
+
+    <div class="header-right">
+      <span id="headerTenantBadge" class="badge-tenant">Loading...</span>
+      <button class="icon-btn" onclick="window.location.href='dashboard.html'" title="Home">🏠</button>
+    </div>
+  </header>
+
+  <main class="container">
+    
+    <!-- Header Notice on Scheduling -->
+    <div class="alert-banner info" style="margin-bottom:16px;">
+      <div>
+        <strong>⏰ Daily Scheduled Job:</strong>
+        Reminders automatically check at <strong>8:00 AM India Standard Time (Asia/Kolkata)</strong> every day. Sends alerts at 30 days, 7 days, and 3 days before certificate expiry.
+      </div>
+    </div>
+
+    <!-- Due Reminders Today Section -->
+    <div class="form-card" style="margin-bottom:20px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+        <div>
+          <h2 style="font-size:1.15rem; font-weight:800; color:var(--primary-dark);">Due for Reminder Today</h2>
+          <p style="font-size:0.8rem; color:var(--text-muted);">Vehicles meeting 30-day, 7-day, or 3-day expiry triggers.</p>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button id="btnSendAllDue" class="btn btn-wa btn-sm" onclick="sendAllDueReminders()">
+            <span>🚀</span> Send Due Reminders via WhatsApp
+          </button>
+        </div>
+      </div>
+
+      <div id="dueRemindersContainer">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+
+    <!-- Reminder Delivery History Table (Part 8 Requirement) -->
+    <div class="form-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
+        <div>
+          <h2 style="font-size:1.15rem; font-weight:800; color:var(--primary-dark);">Reminder History & Delivery Logs</h2>
+          <p style="font-size:0.8rem; color:var(--text-muted);">Audit log of all sent, failed, and pending customer reminders.</p>
+        </div>
+        <span class="badge badge-green" id="historyCountBadge">0 Records</span>
+      </div>
+
+      <div style="overflow-x:auto;">
+        <table style="width:100%; border-collapse:collapse; font-size:0.85rem; text-align:left;">
+          <thead>
+            <tr style="border-bottom:2px solid var(--border-color); color:var(--text-muted);">
+              <th style="padding:10px 8px;">Date & Time</th>
+              <th style="padding:10px 8px;">Vehicle No</th>
+              <th style="padding:10px 8px;">Customer</th>
+              <th style="padding:10px 8px;">Channel / Type</th>
+              <th style="padding:10px 8px;">Status</th>
+              <th style="padding:10px 8px;">Remarks / Cost</th>
+            </tr>
+          </thead>
+          <tbody id="reminderHistoryTable">
+            <!-- Rendered by JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Bottom Navigation Bar for Mobile -->
+  <nav class="bottom-nav">
+    <a href="dashboard.html" class="nav-item">
+      <span class="nav-icon">📊</span>
+      <span>Dashboard</span>
+    </a>
+    <a href="vehicles.html" class="nav-item">
+      <span class="nav-icon">🚗</span>
+      <span>Vehicles</span>
+    </a>
+    <a href="add-vehicle.html" class="nav-item">
+      <span class="nav-icon">➕</span>
+      <span>Add</span>
+    </a>
+    <a href="reminders.html" class="nav-item active">
+      <span class="nav-icon">💬</span>
+      <span>Reminders</span>
+    </a>
+    <a href="settings.html" class="nav-item">
+      <span class="nav-icon">⚙️</span>
+      <span>Settings</span>
+    </a>
+  </nav>
+
+  <script src="js/db.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/whatsapp.js"></script>
+  <script src="js/reminders.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    const session = AppAuth.requireAuth('centre');
+
+    function loadRemindersData() {
+      const centreId = session.id;
+      const dueList = RemindersController.getDueReminders(centreId);
+      const container = document.getElementById('dueRemindersContainer');
+
+      if (dueList.length === 0) {
+        container.innerHTML = `
+          <div style="padding:20px; text-align:center; color:var(--text-muted);">
+            <div style="font-size:32px; margin-bottom:6px;">🎉</div>
+            <div style="font-weight:700; color:var(--text-main);">All customer reminders are up to date!</div>
+            <p style="font-size:0.8rem; margin-top:4px;">No vehicles are currently at 30-day, 7-day, or 3-day milestones today.</p>
+          </div>
+        `;
+        document.getElementById('btnSendAllDue').disabled = true;
+      } else {
+        document.getElementById('btnSendAllDue').disabled = false;
+        container.innerHTML = dueList.map(item => {
+          const v = item.vehicle;
+          return `
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 12px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; margin-bottom:8px; flex-wrap:wrap; gap:8px;">
+              <div>
+                <span class="vehicle-reg-tag" style="font-size:0.9rem;">${v.vno}</span>
+                <strong style="margin-left:6px; font-size:0.88rem;">${v.owner}</strong>
+                <span style="font-size:0.75rem; color:var(--text-muted); margin-left:6px;">(${v.phone})</span>
+                <div style="font-size:0.75rem; margin-top:2px;">
+                  <span class="badge badge-yellow">${item.reason}</span>
+                  <span style="color:var(--text-muted); margin-left:6px;">Expiry: ${v.expDate}</span>
+                  ${item.alreadySentToday ? '<span style="color:var(--success); font-weight:600; margin-left:6px;">✓ Sent today</span>' : ''}
+                </div>
+              </div>
+              <div style="display:flex; gap:6px;">
+                <button class="btn btn-wa btn-sm" onclick='RemindersController.openMessagePreview(${JSON.stringify(v).replace(/'/g, "&#39;")}, "whatsapp")'>
+                  <span>💬</span> WhatsApp
+                </button>
+                <button class="btn btn-sms btn-sm" onclick='RemindersController.openMessagePreview(${JSON.stringify(v).replace(/'/g, "&#39;")}, "sms")'>
+                  <span>✉️</span> SMS
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Load History Table
+      const history = AppDB.getReminders(centreId);
+      document.getElementById('historyCountBadge').textContent = `${history.length} Records`;
+      const tableBody = document.getElementById('reminderHistoryTable');
+
+      if (history.length === 0) {
+        tableBody.innerHTML = `
+          <tr>
+            <td colspan="6" style="padding:24px; text-align:center; color:var(--text-muted);">
+              No reminders have been logged yet. Use One-Click WhatsApp or SMS above to send alerts.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tableBody.innerHTML = history.map(h => {
+        const dateStr = new Date(h.timestamp).toLocaleString('en-IN', {
+          day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
+        });
+        const isSuccess = h.status === 'sent';
+        const badgeClass = isSuccess ? 'badge-green' : 'badge-red';
+
+        return `
+          <tr style="border-bottom:1px solid #f1f5f9;">
+            <td style="padding:10px 8px; font-size:0.78rem; color:var(--text-muted);">${dateStr}</td>
+            <td style="padding:10px 8px; font-weight:700; color:var(--primary-dark);">${h.vehicleNo || 'N/A'}</td>
+            <td style="padding:10px 8px;">${h.customerName || 'Customer'}</td>
+            <td style="padding:10px 8px;">${h.type}</td>
+            <td style="padding:10px 8px;">
+              <span class="badge ${badgeClass}">${h.status}</span>
+            </td>
+            <td style="padding:10px 8px; font-size:0.78rem; color:${isSuccess ? 'var(--success)' : 'var(--danger)'};">
+              ${h.failureReason ? `⚠️ ${h.failureReason}` : (h.cost || '✓ Completed')}
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function sendAllDueReminders() {
+      const dueList = RemindersController.getDueReminders(session.id);
+      if (dueList.length === 0) return;
+      // Trigger first due reminder in modal
+      RemindersController.openMessagePreview(dueList[0].vehicle, 'whatsapp');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadRemindersData();
+    });
+  </script>
+</body>
+</html>

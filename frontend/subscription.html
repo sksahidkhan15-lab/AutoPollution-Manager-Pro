@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Subscription & Billing - AutoPollution Manager Pro</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0e6f42">
+</head>
+<body>
+
+  <!-- Top Header Navigation -->
+  <header class="header-bar">
+    <div class="brand-wrapper" onclick="window.location.href='dashboard.html'">
+      <div class="brand-logo-badge">🚗</div>
+      <div>
+        <div class="brand-title">Subscription & Billing</div>
+        <div class="brand-sub">AutoPollution Pro</div>
+      </div>
+    </div>
+    
+    <div class="header-nav-links">
+      <a href="dashboard.html" style="color:rgba(255,255,255,0.85); text-decoration:none; font-size:0.88rem;">Dashboard</a>
+      <a href="vehicles.html" style="color:rgba(255,255,255,0.85); text-decoration:none; font-size:0.88rem;">Vehicles</a>
+      <a href="reminders.html" style="color:rgba(255,255,255,0.85); text-decoration:none; font-size:0.88rem;">Reminders</a>
+      <a href="subscription.html" style="color:white; font-weight:700; text-decoration:none; font-size:0.88rem;">Subscription</a>
+      <a href="settings.html" style="color:rgba(255,255,255,0.85); text-decoration:none; font-size:0.88rem;">Settings</a>
+    </div>
+
+    <div class="header-right">
+      <span id="headerTenantBadge" class="badge-tenant">Loading...</span>
+      <button class="icon-btn" onclick="window.location.href='dashboard.html'" title="Home">🏠</button>
+    </div>
+  </header>
+
+  <main class="container">
+    
+    <!-- Current Subscription Status Card -->
+    <div class="form-card" style="background:linear-gradient(135deg, #0e6f42 0%, #084d2d 100%); color:#ffffff; padding:20px;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px;">
+        <div>
+          <span style="background:rgba(255,255,255,0.2); padding:3px 10px; border-radius:12px; font-size:0.75rem; font-weight:700; text-transform:uppercase;">
+            Current Active Plan
+          </span>
+          <h2 id="curPlanTitle" style="font-size:1.6rem; font-weight:800; margin-top:6px;">STANDARD PLAN</h2>
+          <div id="curPlanExpiry" style="font-size:0.88rem; opacity:0.9;">Valid until: Calculating...</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:0.75rem; opacity:0.85;">STATUS</div>
+          <span id="curStatusBadge" class="badge badge-green" style="background:#dcfce7; color:#15803d; font-size:0.85rem; padding:4px 10px;">ACTIVE</span>
+        </div>
+      </div>
+
+      <div style="margin-top:16px; padding-top:14px; border-top:1px solid rgba(255,255,255,0.2); font-size:0.82rem; opacity:0.95; display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+        <span>🔒 Zero Data Deletion Policy: Your vehicle records will NEVER be deleted upon subscription expiry.</span>
+        <span>🇮🇳 GST Invoice Available</span>
+      </div>
+    </div>
+
+    <!-- Billing Cycle Toggle -->
+    <div style="display:flex; justify-content:center; align-items:center; gap:12px; margin:24px 0 16px 0;">
+      <span id="lblMonthly" style="font-weight:700; font-size:0.95rem; color:var(--primary-dark);">Monthly Billing</span>
+      <label style="position:relative; display:inline-block; width:50px; height:26px;">
+        <input type="checkbox" id="billingCycleToggle" onchange="toggleBillingCycle()" style="opacity:0; width:0; height:0;">
+        <span style="position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background-color:#cbd5e1; border-radius:34px; transition:.3s;" id="toggleSlider"></span>
+      </label>
+      <span id="lblYearly" style="font-weight:600; font-size:0.95rem; color:var(--text-muted);">
+        Yearly (Save 2 Months Free! 🎁)
+      </span>
+    </div>
+
+    <!-- Pricing Plans Comparison Grid -->
+    <div class="pricing-grid">
+      
+      <!-- Basic Plan -->
+      <div class="pricing-card" id="cardBasic">
+        <h3 class="pricing-title">Basic</h3>
+        <p style="font-size:0.82rem; color:var(--text-muted);">For single-counter testing centres</p>
+        <div class="pricing-price">
+          ₹<span id="priceBasic">199</span><span id="cycleBasic" style="font-size:0.9rem; font-weight:500; color:var(--text-muted);">/mo</span>
+        </div>
+        <ul class="pricing-features">
+          <li>✅ Up to 500 Vehicles</li>
+          <li>✅ <strong>Free One-Click WhatsApp</strong></li>
+          <li>✅ <strong>Free One-Click SMS</strong></li>
+          <li>✅ Fast Search & Expiry Table</li>
+          <li>✅ CSV Backup & Restore</li>
+          <li>❌ Automatic Scheduled Cloud API</li>
+        </ul>
+        <button class="btn btn-secondary" onclick="handlePayClick('basic')">Select Basic</button>
+      </div>
+
+      <!-- Standard Plan (Featured) -->
+      <div class="pricing-card featured" id="cardStandard">
+        <span class="pricing-ribbon">RECOMMENDED</span>
+        <h3 class="pricing-title">Standard</h3>
+        <p style="font-size:0.82rem; color:var(--text-muted);">Most popular for active Indian centres</p>
+        <div class="pricing-price">
+          ₹<span id="priceStandard">399</span><span id="cycleStandard" style="font-size:0.9rem; font-weight:500; color:var(--text-muted);">/mo</span>
+        </div>
+        <ul class="pricing-features">
+          <li>✅ Up to 2,500 Vehicles</li>
+          <li>✅ <strong>Everything in Basic</strong></li>
+          <li>✅ <strong>Meta WhatsApp Cloud API</strong></li>
+          <li>✅ <strong>Daily 8:00 AM Automated Job</strong></li>
+          <li>✅ 30-Day, 7-Day & 3-Day Reminders</li>
+          <li>✅ Custom Message Templates</li>
+          <li>✅ Full Expiry & Delivery Logs</li>
+        </ul>
+        <button class="btn btn-primary" onclick="handlePayClick('standard')">Select Standard</button>
+      </div>
+
+      <!-- Premium Plan -->
+      <div class="pricing-card" id="cardPremium">
+        <h3 class="pricing-title">Premium</h3>
+        <p style="font-size:0.82rem; color:var(--text-muted);">High-volume multi-lane centres</p>
+        <div class="pricing-price">
+          ₹<span id="pricePremium">599</span><span id="cyclePremium" style="font-size:0.9rem; font-weight:500; color:var(--text-muted);">/mo</span>
+        </div>
+        <ul class="pricing-features">
+          <li>✅ <strong>Unlimited Vehicles</strong></li>
+          <li>✅ <strong>Everything in Standard</strong></li>
+          <li>✅ Meta Embedded Signup Support</li>
+          <li>✅ Automatic DLT SMS Integration</li>
+          <li>✅ Multi-Staff Operator Accounts</li>
+          <li>✅ Priority Phone & Support</li>
+        </ul>
+        <button class="btn btn-secondary" onclick="handlePayClick('premium')">Select Premium</button>
+      </div>
+
+    </div>
+
+    <!-- Payment Gateway & DLT Notice -->
+    <div class="form-card" style="font-size:0.85rem; color:var(--text-muted); line-height:1.5;">
+      <h3 style="font-size:1rem; font-weight:700; color:var(--text-main); margin-bottom:6px;">Important Commercial Information</h3>
+      <p style="margin-bottom:8px;">
+        • <strong>Free One-Click Feature:</strong> Both One-Click WhatsApp and One-Click SMS are 100% free software features included across all Basic, Standard, and Premium plans. Your device opens WhatsApp or SMS directly.
+      </p>
+      <p style="margin-bottom:8px;">
+        • <strong>Automatic Cloud API Messaging:</strong> Automated background reminders (running at 8:00 AM IST) utilize your connected Meta WhatsApp Cloud API credentials and Indian TRAI/DLT compliant sender IDs.
+      </p>
+      <p>
+        • <strong>Payment Security:</strong> Payments are processed via Razorpay with encrypted webhook verification and instant subscription renewal.
+      </p>
+    </div>
+
+  </main>
+
+  <!-- Bottom Navigation Bar for Mobile -->
+  <nav class="bottom-nav">
+    <a href="dashboard.html" class="nav-item">
+      <span class="nav-icon">📊</span>
+      <span>Dashboard</span>
+    </a>
+    <a href="vehicles.html" class="nav-item">
+      <span class="nav-icon">🚗</span>
+      <span>Vehicles</span>
+    </a>
+    <a href="add-vehicle.html" class="nav-item">
+      <span class="nav-icon">➕</span>
+      <span>Add</span>
+    </a>
+    <a href="reminders.html" class="nav-item">
+      <span class="nav-icon">💬</span>
+      <span>Reminders</span>
+    </a>
+    <a href="settings.html" class="nav-item">
+      <span class="nav-icon">⚙️</span>
+      <span>Settings</span>
+    </a>
+  </nav>
+
+  <script src="js/db.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/payment.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    const session = AppAuth.requireAuth('centre');
+    let isYearly = false;
+
+    function loadSubscriptionStatus() {
+      const centreId = session.id;
+      const centre = AppDB.getCentreById(centreId);
+      const plans = AppDB.getPlans();
+
+      const curPlan = (centre && centre.plan) ? centre.plan : 'standard';
+      const validTill = (centre && centre.subscriptionValidTill) ? new Date(centre.subscriptionValidTill) : new Date(Date.now() + 30 * 86400000);
+      const diffDays = Math.ceil((validTill - new Date()) / 86400000);
+
+      document.getElementById('curPlanTitle').textContent = `${curPlan.toUpperCase()} PLAN`;
+      document.getElementById('curPlanExpiry').textContent = `Valid until: ${validTill.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })} (${diffDays > 0 ? `${diffDays} days left` : 'Expired'})`;
+      
+      const badge = document.getElementById('curStatusBadge');
+      if (diffDays <= 0) {
+        badge.className = 'badge badge-red';
+        badge.textContent = 'EXPIRED';
+      } else {
+        badge.className = 'badge badge-green';
+        badge.textContent = 'ACTIVE';
+      }
+
+      // Update pricing numbers
+      const mult = isYearly ? 10 : 1;
+      const cycleSuffix = isYearly ? '/year' : '/mo';
+
+      document.getElementById('priceBasic').textContent = (plans.basic.price * mult).toLocaleString('en-IN');
+      document.getElementById('cycleBasic').textContent = cycleSuffix;
+
+      document.getElementById('priceStandard').textContent = (plans.standard.price * mult).toLocaleString('en-IN');
+      document.getElementById('cycleStandard').textContent = cycleSuffix;
+
+      document.getElementById('pricePremium').textContent = (plans.premium.price * mult).toLocaleString('en-IN');
+      document.getElementById('cyclePremium').textContent = cycleSuffix;
+    }
+
+    function toggleBillingCycle() {
+      isYearly = document.getElementById('billingCycleToggle').checked;
+      const slider = document.getElementById('toggleSlider');
+      if (isYearly) {
+        slider.style.backgroundColor = 'var(--primary)';
+        document.getElementById('lblYearly').style.color = 'var(--primary-dark)';
+        document.getElementById('lblYearly').style.fontWeight = '700';
+        document.getElementById('lblMonthly').style.fontWeight = '500';
+      } else {
+        slider.style.backgroundColor = '#cbd5e1';
+        document.getElementById('lblMonthly').style.color = 'var(--primary-dark)';
+        document.getElementById('lblMonthly').style.fontWeight = '700';
+        document.getElementById('lblYearly').style.fontWeight = '500';
+      }
+      loadSubscriptionStatus();
+    }
+
+    function handlePayClick(planId) {
+      PaymentGateway.initiateSubscriptionPayment(planId, isYearly ? 'yearly' : 'monthly');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadSubscriptionStatus();
+    });
+  </script>
+</body>
+</html>

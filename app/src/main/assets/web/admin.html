@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Super Admin Portal - AutoPollution Manager Pro</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#dc2626">
+</head>
+<body>
+
+  <!-- Top Header Navigation (Super Admin Red Accent) -->
+  <header class="header-bar" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-bottom:3px solid #dc2626;">
+    <div class="brand-wrapper" onclick="window.location.href='admin.html'">
+      <div class="brand-logo-badge" style="background:#dc2626;">🛡️</div>
+      <div>
+        <div class="brand-title">Super Admin Portal</div>
+        <div class="brand-sub">Platform Control & Multi-Centre Governance</div>
+      </div>
+    </div>
+    
+    <div class="header-right">
+      <span class="badge-tenant" style="background:#dc2626;">SUPER ADMIN</span>
+      <a href="dashboard.html" class="btn btn-secondary btn-sm" style="color:#ffffff; background:rgba(255,255,255,0.2);">Centre View</a>
+      <button class="icon-btn" onclick="handleAdminLogout()" title="Logout">🚪</button>
+    </div>
+  </header>
+
+  <main class="container">
+    
+    <!-- Top Stats (10 Admin Metrics - Part 11) -->
+    <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));">
+      
+      <div class="stat-card">
+        <div class="stat-title">Total Centres</div>
+        <div class="stat-value" id="admTotalCentres">0</div>
+        <div class="stat-desc">Platform total</div>
+      </div>
+
+      <div class="stat-card card-green">
+        <div class="stat-title">Approved</div>
+        <div class="stat-value" id="admApprovedCentres">0</div>
+        <div class="stat-desc">Active clients</div>
+      </div>
+
+      <div class="stat-card card-amber">
+        <div class="stat-title">Pending</div>
+        <div class="stat-value" id="admPendingCentres">0</div>
+        <div class="stat-desc">Require verification</div>
+      </div>
+
+      <div class="stat-card card-red">
+        <div class="stat-title">Rejected</div>
+        <div class="stat-value" id="admRejectedCentres">0</div>
+        <div class="stat-desc">Declined centres</div>
+      </div>
+
+      <div class="stat-card card-blue">
+        <div class="stat-title">Active Subs</div>
+        <div class="stat-value" id="admActiveSubs">0</div>
+        <div class="stat-desc">Paid subscriptions</div>
+      </div>
+
+      <div class="stat-card card-green">
+        <div class="stat-title">Total Vehicles</div>
+        <div class="stat-value" id="admTotalVehicles">0</div>
+        <div class="stat-desc">Across all centres</div>
+      </div>
+
+      <div class="stat-card card-wa">
+        <div class="stat-title">WhatsApp API</div>
+        <div class="stat-value" id="admWaConnected">0</div>
+        <div class="stat-desc">Connected WABAs</div>
+      </div>
+
+    </div>
+
+    <!-- Pricing Plans Configuration Section (Part 12 Requirement) -->
+    <div class="form-card" style="margin-bottom:20px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <div>
+          <h2 style="font-size:1.1rem; font-weight:800; color:var(--primary-dark);">SaaS Pricing Configuration</h2>
+          <p style="font-size:0.8rem; color:var(--text-muted);">Edit base subscription rates charged to pollution testing centres.</p>
+        </div>
+        <span class="badge badge-blue">SaaS Owner Control</span>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Basic Plan (₹ / month)</label>
+          <div style="display:flex; gap:6px;">
+            <input type="number" id="cfgPriceBasic" class="form-control" value="199">
+            <button class="btn btn-secondary btn-sm" onclick="savePlanPrice('basic')">Save</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Standard Plan (₹ / month)</label>
+          <div style="display:flex; gap:6px;">
+            <input type="number" id="cfgPriceStandard" class="form-control" value="399">
+            <button class="btn btn-secondary btn-sm" onclick="savePlanPrice('standard')">Save</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Premium Plan (₹ / month)</label>
+          <div style="display:flex; gap:6px;">
+            <input type="number" id="cfgPricePremium" class="form-control" value="599">
+            <button class="btn btn-secondary btn-sm" onclick="savePlanPrice('premium')">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Centre Management & Approval Queue -->
+    <div class="form-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
+        <div>
+          <h2 style="font-size:1.15rem; font-weight:800; color:var(--primary-dark);">Centres Directory & Approval Queue</h2>
+          <p style="font-size:0.8rem; color:var(--text-muted);">Review pending registration applications, change subscription plans, or suspend access.</p>
+        </div>
+        <div class="filter-pills">
+          <button class="pill active" onclick="filterAdminCentres('all', this)">All</button>
+          <button class="pill" onclick="filterAdminCentres('pending', this)">Pending Approvals</button>
+          <button class="pill" onclick="filterAdminCentres('approved', this)">Approved</button>
+          <button class="pill" onclick="filterAdminCentres('rejected', this)">Rejected</button>
+        </div>
+      </div>
+
+      <div id="adminCentresList">
+        <!-- Injected by JS -->
+      </div>
+    </div>
+
+  </main>
+
+  <script src="js/db.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/admin.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    // Ensure Super Admin or Demo Switch
+    let session = AppAuth.getSession();
+    if (!session || session.role !== 'admin') {
+      // Auto-elevate to Super Admin for demo ease if user navigated here directly
+      session = {
+        id: 'super_admin_master',
+        centreId: 'SUPER-ADMIN',
+        name: 'Super Administrator',
+        role: 'admin',
+        email: 'admin@autopollution.com',
+        status: 'approved'
+      };
+      localStorage.setItem(AppAuth.SESSION_KEY, JSON.stringify(session));
+    }
+
+    let adminFilter = 'all';
+
+    function loadAdminDashboard() {
+      const stats = AdminController.loadAdminStats();
+
+      document.getElementById('admTotalCentres').textContent = stats.totalCentres;
+      document.getElementById('admApprovedCentres').textContent = stats.approvedCount;
+      document.getElementById('admPendingCentres').textContent = stats.pendingCount;
+      document.getElementById('admRejectedCentres').textContent = stats.rejectedCount;
+      document.getElementById('admActiveSubs').textContent = stats.activeSubs;
+      document.getElementById('admTotalVehicles').textContent = stats.totalVehicles;
+      document.getElementById('admWaConnected').textContent = stats.waConnectedCount;
+
+      // Pricing inputs
+      document.getElementById('cfgPriceBasic').value = stats.plans.basic.price;
+      document.getElementById('cfgPriceStandard').value = stats.plans.standard.price;
+      document.getElementById('cfgPricePremium').value = stats.plans.premium.price;
+
+      renderCentresList();
+    }
+
+    function filterAdminCentres(status, btn) {
+      adminFilter = status;
+      document.querySelectorAll('.filter-pills .pill').forEach(p => p.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      renderCentresList();
+    }
+
+    function renderCentresList() {
+      let centres = AppDB.getAllCentres();
+      if (adminFilter !== 'all') {
+        centres = centres.filter(c => c.status === adminFilter);
+      }
+
+      const listContainer = document.getElementById('adminCentresList');
+      if (centres.length === 0) {
+        listContainer.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-title">No centres found in this category</div>
+          </div>
+        `;
+        return;
+      }
+
+      listContainer.innerHTML = centres.map(c => {
+        const vCount = AppDB.getVehicles(c.id).length;
+        const statusBadge = c.status === 'approved' 
+          ? '<span class="badge badge-green">APPROVED</span>' 
+          : (c.status === 'pending' ? '<span class="badge badge-yellow">PENDING REVIEW</span>' : '<span class="badge badge-red">REJECTED</span>');
+
+        return `
+          <div style="background:#ffffff; border:1px solid #e2e8f0; border-radius:10px; padding:14px; margin-bottom:12px; box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px;">
+              <div>
+                <span class="vehicle-reg-tag" style="background:#eff6ff; border-color:#bfdbfe; color:#1e40af;">${c.centreId || 'NEW'}</span>
+                <strong style="margin-left:6px; font-size:1rem; color:#0f172a;">${c.name}</strong>
+                <div style="font-size:0.8rem; color:#64748b; margin-top:3px;">
+                  Owner: <strong>${c.ownerName}</strong> | 📞 ${c.phone} | 📧 ${c.email}
+                </div>
+                <div style="font-size:0.75rem; color:#64748b; margin-top:2px;">
+                  📍 ${c.address}, ${c.district}, ${c.state} ${c.location ? `(${c.location})` : ''}
+                </div>
+              </div>
+              <div style="text-align:right;">
+                ${statusBadge}
+                <div style="font-size:0.75rem; color:#64748b; margin-top:4px;">
+                  Plan: <strong style="text-transform:uppercase; color:var(--primary);">${c.plan || 'basic'}</strong> | Vehicles: <strong>${vCount}</strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Buttons for Super Admin -->
+            <div style="display:flex; gap:8px; margin-top:12px; padding-top:10px; border-top:1px solid #f1f5f9; flex-wrap:wrap;">
+              ${c.status === 'pending' ? `
+                <button class="btn btn-primary btn-sm" onclick="approveCentreAction('${c.id}')">
+                  ✅ Approve Centre
+                </button>
+                <button class="btn btn-danger btn-sm" onclick="rejectCentreAction('${c.id}')">
+                  ❌ Reject Application
+                </button>
+              ` : ''}
+
+              ${c.status === 'approved' ? `
+                <button class="btn btn-secondary btn-sm" onclick="changePlanAction('${c.id}', '${c.plan}')">
+                  💳 Change Plan (${(c.plan || 'basic').toUpperCase()})
+                </button>
+                <button class="btn btn-secondary btn-sm" onclick="loginAsCentre('${c.id}')">
+                  👁️ View Centre Dashboard
+                </button>
+                <button class="btn btn-danger btn-sm" onclick="suspendCentreAction('${c.id}')">
+                  Suspend
+                </button>
+              ` : ''}
+
+              ${c.status === 'rejected' || c.status === 'suspended' ? `
+                <button class="btn btn-primary btn-sm" onclick="approveCentreAction('${c.id}')">
+                  Activate / Re-Approve
+                </button>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function approveCentreAction(id) {
+      AdminController.approveCentre(id);
+      loadAdminDashboard();
+    }
+
+    function rejectCentreAction(id) {
+      const reason = prompt('Enter rejection reason for this centre application:', 'Incomplete address or unverified emission license');
+      if (reason) {
+        AdminController.rejectCentre(id, reason);
+        loadAdminDashboard();
+      }
+    }
+
+    function suspendCentreAction(id) {
+      confirmAction('Suspend Centre', 'Are you sure you want to suspend this centre? Users will not be able to log in.', () => {
+        AdminController.suspendCentre(id);
+        loadAdminDashboard();
+      });
+    }
+
+    function changePlanAction(id, current) {
+      const newPlan = prompt('Enter new subscription plan (basic / standard / premium):', current || 'standard');
+      if (newPlan && ['basic', 'standard', 'premium'].includes(newPlan.toLowerCase())) {
+        AdminController.changePlan(id, newPlan.toLowerCase());
+        loadAdminDashboard();
+      } else if (newPlan) {
+        alert('Please enter a valid plan: basic, standard, or premium');
+      }
+    }
+
+    function loginAsCentre(id) {
+      const centre = AppDB.getCentreById(id);
+      if (centre) {
+        AppAuth.login(centre.email, centre.password || '123456');
+        window.location.href = 'dashboard.html';
+      }
+    }
+
+    function savePlanPrice(planId) {
+      const input = document.getElementById('cfgPrice' + planId.charAt(0).toUpperCase() + planId.slice(1));
+      AdminController.updatePlanPrice(planId, input.value);
+    }
+
+    function handleAdminLogout() {
+      AppAuth.logout();
+      window.location.href = 'login.html';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadAdminDashboard();
+    });
+  </script>
+</body>
+</html>
